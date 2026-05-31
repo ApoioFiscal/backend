@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum FuncaoUsuario{
+  SECRETARIO
+  SERVIDOR
+  FISCAL
+}
+
+model Setor {
+  id       Int       @id @default(autoincrement())
+  nome     String
+  sigla    String    @unique
+
+  usuarios Usuario[]
+
+  criadoEm     DateTime  @default(now())
+  atualizadoEm DateTime  @updatedAt
+
+  @@map("setor")
+}
+
+model Usuario {
+  id      Int           @id @default(autoincrement())
+  nome    String
+  email   String        @unique
+  senha   String
+  funcao  FuncaoUsuario
+  isAdmin Boolean       @default(false)
+
+  idSetor Int
+  setor   Setor @relation(fields: [idSetor], references: [id])
+
+  criadoEm     DateTime  @default(now())
+  atualizadoEm DateTime  @updatedAt
+
+  @@index([idSetor])
+  @@map("usuario")
+}
