@@ -1,6 +1,6 @@
 import  { Request, Response } from "express";
 import { FuncaoUsuario } from "@prisma/client";
-import { usuarioService } from "../services/usuario.service";
+import { usuarioService } from "./usuario.service";
 
 export const usuarioController = {
   async create(req: Request, res: Response): Promise<void> {

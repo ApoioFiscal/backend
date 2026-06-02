@@ -1,4 +1,4 @@
-import { setorRepository, CreateSetorDTO } from "../repositories/setor.repository";
+import { setorRepository, CreateSetorDTO } from "./setor.repository";
 
 export const setorService = {
   async create(input: CreateSetorDTO) {

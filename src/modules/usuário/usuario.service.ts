@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { FuncaoUsuario } from "@prisma/client";
-import { usuarioRepository, CreateUsuarioDTO } from "../repositories/usuario.repository";
-import { setorRepository } from "../repositories/setor.repository";
+import { usuarioRepository, CreateUsuarioDTO } from "./usuario.repository";
+import { setorRepository } from "../setor/setor.repository";
 
 const SALT_ROUNDS = 12;
 

@@ -6,39 +6,35 @@ datasource db {
   provider = "postgresql"
 }
 
-enum FuncaoUsuario{
-  SECRETARIO
-  SERVIDOR
-  FISCAL
-}
-
 model Setor {
-  id       Int       @id @default(autoincrement())
-  nome     String
-  sigla    String    @unique
-
-  usuarios Usuario[]
-
+  id           Int       @id @default(autoincrement())
+  nome         String
+  sigla        String    @unique
   criadoEm     DateTime  @default(now())
   atualizadoEm DateTime  @updatedAt
+  usuarios     Usuario[]
 
   @@map("setor")
 }
 
 model Usuario {
-  id      Int           @id @default(autoincrement())
-  nome    String
-  email   String        @unique
-  senha   String
-  funcao  FuncaoUsuario
-  isAdmin Boolean       @default(false)
-
-  idSetor Int
-  setor   Setor @relation(fields: [idSetor], references: [id])
-
-  criadoEm     DateTime  @default(now())
-  atualizadoEm DateTime  @updatedAt
+  id           Int           @id @default(autoincrement())
+  nome         String
+  email        String        @unique
+  senha        String
+  funcao       FuncaoUsuario
+  isAdmin      Boolean       @default(false)
+  idSetor      Int
+  criadoEm     DateTime      @default(now())
+  atualizadoEm DateTime      @updatedAt
+  setor        Setor         @relation(fields: [idSetor], references: [id])
 
   @@index([idSetor])
   @@map("usuario")
+}
+
+enum FuncaoUsuario {
+  SECRETARIO
+  SERVIDOR
+  FISCAL
 }

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { setorService } from "../services/setor.service";
+import { setorService } from "./setor.service";
 
 export const setorController = {
   async create(req: Request, res: Response): Promise<void> {
