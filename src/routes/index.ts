@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { setorRouter } from "../modules/setor/setor.route";
-import { usuarioRouter } from "../modules/usuário/usuario.route";
+import { usuarioRouter } from "../modules/usuario/usuario.route";
 
 export const router = Router();
 

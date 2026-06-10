@@ -28,9 +28,10 @@ export type CreateUsuarioInput = z.infer<typeof CreateUsuarioSchema>;
 
 // ==================== ID VALIDATION ====================
 export const IdParamSchema = z.object({
-  id: z.string().pipe(
-    z.coerce.number().int("ID deve ser um número inteiro").positive("ID deve ser positivo")
-  ),
+  id: z.string()
+    .regex(/^\d+$/, "ID deve conter apenas números")
+    .transform((val) => parseInt(val, 10))
+    .positive("ID deve ser positivo"),
 });
 
 export type IdParam = z.infer<typeof IdParamSchema>;

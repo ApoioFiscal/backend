@@ -6,33 +6,43 @@ datasource db {
   provider = "postgresql"
 }
 
+//  Tabela de setores
 model Setor {
-  id           Int       @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   nome         String
-  sigla        String    @unique
-  criadoEm     DateTime  @default(now())
-  atualizadoEm DateTime  @updatedAt
-  usuarios     Usuario[]
+  sigla        String   @unique
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  // Relacionamento com a tabela Usuario
+  usuarios Usuario[]
 
   @@map("setor")
 }
 
+// Tabela de usuários
 model Usuario {
   id           Int           @id @default(autoincrement())
+  idSetor      Int           // Chave estrangeira para o setor ao qual o usuário pertence
   nome         String
   email        String        @unique
   senha        String
   funcao       FuncaoUsuario
   isAdmin      Boolean       @default(false)
-  idSetor      Int
   criadoEm     DateTime      @default(now())
   atualizadoEm DateTime      @updatedAt
-  setor        Setor         @relation(fields: [idSetor], references: [id])
+
+  // Relacionamento com a tabela Setor
+  setor Setor @relation(fields: [idSetor], references: [id])
+
+  // Relacionamento com a tabela Solicitacao, armazenando as solicitações feitas por cada usuário
+  solicitacoes Solicitacao[]
 
   @@index([idSetor])
   @@map("usuario")
 }
 
+// Enum para as funções dos usuários
 enum FuncaoUsuario {
   PREFEITO
   SECRETARIO
@@ -40,42 +50,61 @@ enum FuncaoUsuario {
   FISCAL
 }
 
-model Licitacao {
-  id Int @id @default(autoincrement())
+// Tabela de licitações
+model LicitacaoContrato {
+  id             Int      @id @default(autoincrement())
   numeroProcesso String
-  dataAbertura DateTime
+  dataAbertura   DateTime
   dataFechamento DateTime
-  modalidade String
-  status Boolean
-  valorTotal Float
+  modalidade     String
+  status         Boolean
+  valorTotal     Float
+
+  // Relacionamento com a tabela ItemLicitado, armazenando os itens licitados de cada licitação
+  itemLicitado ItemLicitado[]
 
   @@map("licitacao")
 }
 
+// Tabela de itens licitados
 model ItemLicitado {
-  id Int @id @default(autoincrement())
-  descricao String
-  marca String
-  unidade String
-  quantidade Int
+  id            Int    @id @default(autoincrement())
+  idLicitacao   Int    // Chave estrangeira para a licitação à qual o item pertence
+  descricao     String
+  marca         String
+  unidade       String
+  quantidade    Int
   precoUnitario Float
-  precoTotal Float
-  idLicitacao Int
+  precoTotal    Float
+
+  // Associação com a tabela Licitacao, armazenando o ID da licitação a qual o item pertence
+  solicitacao Solicitacao[]
+
+  // Relacionamento com a tabela LicitacaoContrato, armazenando a licitação à qual o item pertence
+  licitacao LicitacaoContrato @relation(fields: [idLicitacao], references: [id])
 
   @@index([idLicitacao])
   @@map("item_licitado")
 }
 
-model Solicitacao{
-  id Int @id @default(autoincrement())
-  idUsuario Int
-  idItemLicitado Int
-  dataSolicitacao DateTime @default(now())
-  quantPedida Int
-  descricao String
+
+// Tabela de solicitações
+model Solicitacao {
+  id              Int      @id @default(autoincrement())
+  idUsuario       Int      // Chave estrangeira para o usuário que fez a solicitação
+  idItemLicitado  Int      // Chave estrangeira para o item licitado ao qual a solicitação se refere
+  dataSolicitacao DateTime     @default(now())
+  quantPedida     Int
+  descricao       String
+  usuarioID       Int
+
+  // Relacionamento com as tabelas Usuario e ItemLicitado
+  usuario Usuario @relation(fields: [idUsuario], references: [id])
+
+  // Relacionamento com a tabela ItemLicitado
+  itemLicitadoId ItemLicitado @relation(fields: [idItemLicitado], references: [id])
 
   @@index([idUsuario])
   @@index([idItemLicitado])
   @@map("solicitacao")
-
 }
