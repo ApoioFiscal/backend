@@ -34,7 +34,48 @@ model Usuario {
 }
 
 enum FuncaoUsuario {
+  PREFEITO
   SECRETARIO
   SERVIDOR
   FISCAL
+}
+
+model Licitacao {
+  id Int @id @default(autoincrement())
+  numeroProcesso String
+  dataAbertura DateTime
+  dataFechamento DateTime
+  modalidade String
+  status Boolean
+  valorTotal Float
+
+  @@map("licitacao")
+}
+
+model ItemLicitado {
+  id Int @id @default(autoincrement())
+  descricao String
+  marca String
+  unidade String
+  quantidade Int
+  precoUnitario Float
+  precoTotal Float
+  idLicitacao Int
+
+  @@index([idLicitacao])
+  @@map("item_licitado")
+}
+
+model Solicitacao{
+  id Int @id @default(autoincrement())
+  idUsuario Int
+  idItemLicitado Int
+  dataSolicitacao DateTime @default(now())
+  quantPedida Int
+  descricao String
+
+  @@index([idUsuario])
+  @@index([idItemLicitado])
+  @@map("solicitacao")
+
 }

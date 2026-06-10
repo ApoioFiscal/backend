@@ -1,50 +1,48 @@
 import bcrypt from "bcrypt";
-import { FuncaoUsuario } from "@prisma/client";
-import { usuarioRepository, CreateUsuarioDTO } from "./usuario.repository";
-import { setorRepository } from "../setor/setor.repository";
+import { UsuarioRepository } from "./usuario.repository";
+import { SetorRepository } from "../setor/setor.repository";
+import { CreateUsuarioInput } from "../../common/schemas";
+import { DuplicateEmailError, NotFoundError } from "../../common/errors";
 
 const SALT_ROUNDS = 12;
 
-interface CreateUsuarioInput {
-  nome: string;
-  email: string;
-  senha: string;
-  funcao: FuncaoUsuario;
-  isAdmin?: boolean;
-  idSetor: number;
-}
+export class UsuarioService {
+  constructor(
+    private usuarioRepository: UsuarioRepository,
+    private setorRepository: SetorRepository
+  ) {}
 
-export const usuarioService = {
   async create(input: CreateUsuarioInput) {
-    const emailJaExiste = await usuarioRepository.findByEmail(input.email);
+    // Valida email único
+    const emailJaExiste = await this.usuarioRepository.findByEmail(input.email);
     if (emailJaExiste) {
-      throw new Error("EMAIL_JA_CADASTRADO");
+      throw new DuplicateEmailError();
     }
 
-    const setorExiste = await setorRepository.findById(input.idSetor);
+    // Valida setor existente
+    const setorExiste = await this.setorRepository.findById(input.idSetor);
     if (!setorExiste) {
-      throw new Error("SETOR_NAO_ENCONTRADO");
+      throw new NotFoundError("Setor");
     }
 
+    // Criptografa a senha
     const senhaHash = await bcrypt.hash(input.senha, SALT_ROUNDS);
 
-    const data: CreateUsuarioDTO = {
+    return this.usuarioRepository.create({
       ...input,
       senha: senhaHash,
-    };
-
-    return usuarioRepository.create(data);
-  },
+    });
+  }
 
   async findAll() {
-    return usuarioRepository.findAll();
-  },
+    return this.usuarioRepository.findAll();
+  }
 
   async findById(id: number) {
-    const usuario = await usuarioRepository.findById(id);
+    const usuario = await this.usuarioRepository.findById(id);
     if (!usuario) {
-      throw new Error("USUARIO_NAO_ENCONTRADO");
+      throw new NotFoundError("Usuário");
     }
     return usuario;
-  },
-};
+  }
+}

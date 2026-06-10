@@ -1,24 +1,28 @@
-import { setorRepository, CreateSetorDTO } from "./setor.repository";
+import { SetorRepository } from "./setor.repository";
+import { CreateSetorInput } from "../../common/schemas";
+import { DuplicateDataError, NotFoundError } from "../../common/errors";
 
-export const setorService = {
-  async create(input: CreateSetorDTO) {
-    const siglaJaExiste = await setorRepository.findBySigla(input.sigla);
+export class SetorService {
+  constructor(private repository: SetorRepository) {}
+
+  async create(input: CreateSetorInput) {
+    const siglaJaExiste = await this.repository.findBySigla(input.sigla);
     if (siglaJaExiste) {
-      throw new Error("SIGLA_JA_CADASTRADA");
+      throw new DuplicateDataError("Sigla");
     }
 
-    return setorRepository.create(input);
-  },
+    return this.repository.create(input);
+  }
 
   async findAll() {
-    return setorRepository.findAll();
-  },
+    return this.repository.findAll();
+  }
 
   async findById(id: number) {
-    const setor = await setorRepository.findById(id);
+    const setor = await this.repository.findById(id);
     if (!setor) {
-      throw new Error("SETOR_NAO_ENCONTRADO");
+      throw new NotFoundError("Setor");
     }
     return setor;
-  },
-};
+  }
+}

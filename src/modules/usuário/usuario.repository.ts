@@ -1,82 +1,62 @@
 import { FuncaoUsuario } from "@prisma/client";
 import { prisma } from "../../prisma/client";
+import { CreateUsuarioInput } from "../../common/schemas";
 
-export interface CreateUsuarioDTO {
+interface UsuarioComSetor {
+  id: number;
   nome: string;
   email: string;
-  senha: string;
   funcao: FuncaoUsuario;
-  isAdmin?: boolean;
-  idSetor: number;
+  isAdmin: boolean;
+  criadoEm: Date;
+  setor: {
+    id: number;
+    nome: string;
+    sigla: string;
+  };
 }
 
-export const usuarioRepository = {
-  async create(data: CreateUsuarioDTO) {
-    return prisma.usuario.create({
-      data,
+export class UsuarioRepository {
+  private usuarioSelect = {
+    id: true,
+    nome: true,
+    email: true,
+    funcao: true,
+    isAdmin: true,
+    criadoEm: true,
+    setor: {
       select: {
         id: true,
         nome: true,
-        email: true,
-        funcao: true,
-        isAdmin: true,
-        criadoEm: true,
-        setor: {
-          select: {
-            id: true,
-            nome: true,
-            sigla: true,
-          },
-        },
+        sigla: true,
       },
-    });
-  },
+    },
+  };
+
+  async create(data: CreateUsuarioInput & { senha: string }): Promise<UsuarioComSetor> {
+    return prisma.usuario.create({
+      data,
+      select: this.usuarioSelect,
+    }) as Promise<UsuarioComSetor>;
+  }
 
   async findByEmail(email: string) {
     return prisma.usuario.findUnique({
       where: { email },
     });
-  },
+  }
 
-  async findById(id: number) {
+  async findById(id: number): Promise<UsuarioComSetor | null> {
     return prisma.usuario.findUnique({
       where: { id },
-      select: {
-        id: true,
-        nome: true,
-        email: true,
-        funcao: true,
-        isAdmin: true,
-        criadoEm: true,
-        setor: {
-          select: {
-            id: true,
-            nome: true,
-            sigla: true,
-          },
-        },
-      },
-    });
-  },
+      select: this.usuarioSelect,
+    }) as Promise<UsuarioComSetor | null>;
+  }
 
-  async findAll() {
+  async findAll(): Promise<UsuarioComSetor[]> {
     return prisma.usuario.findMany({
-      select: {
-        id: true,
-        nome: true,
-        email: true,
-        funcao: true,
-        isAdmin: true,
-        criadoEm: true,
-        setor: {
-          select: {
-            id: true,
-            nome: true,
-            sigla: true,
-          },
-        },
-      },
+      select: this.usuarioSelect,
       orderBy: { criadoEm: "desc" },
-    });
-  },
-};
+    }) as Promise<UsuarioComSetor[]>;
+  }
+}
