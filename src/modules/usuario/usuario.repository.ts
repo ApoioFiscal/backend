@@ -59,4 +59,11 @@ export class UsuarioRepository {
       orderBy: { criadoEm: "desc" },
     }) as Promise<UsuarioComSetor[]>;
   }
+
+  async deleteById(id: number): Promise<UsuarioComSetor | null> {
+    return prisma.usuario.delete({
+      where: { id },
+      select: this.usuarioSelect,
+    }) as Promise<UsuarioComSetor | null>
+  }
 }

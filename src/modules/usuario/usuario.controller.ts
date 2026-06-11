@@ -3,7 +3,7 @@ import { UsuarioService } from "./usuario.service";
 import { sendSuccess } from "../../common/middleware";
 
 export class UsuarioController {
-  constructor(private service: UsuarioService) {}
+  constructor(private service: UsuarioService) { }
 
   //  Criar um novo usuário
   async create(req: Request, res: Response): Promise<void> {
@@ -22,5 +22,18 @@ export class UsuarioController {
     const id = Number(req.params.id);
     const usuario = await this.service.findById(id);
     sendSuccess(res, usuario);
+  }
+
+  // Deletar usuário por ID
+  async deleteById(req: Request, res: Response): Promise<void> {
+    const id = Number(req.params.id);
+    const usuario = await this.service.deleteById(id)
+    sendSuccess(res, usuario)
+  }
+
+  // Login do usuário retornando o token
+  async loginUser(req: Request, res: Response): Promise<void> {
+    const token = await this.service.loginUser(req.body);
+    sendSuccess(res, token);
   }
 }

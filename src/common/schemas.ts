@@ -1,7 +1,7 @@
-import { z } from "zod";
+import { email, z } from "zod";
 import { FuncaoUsuario } from "@prisma/client";
 
-// ==================== SETOR SCHEMAS ====================
+// Schemas do Setor 
 export const CreateSetorSchema = z.object({
   nome: z.string().min(1, "Nome é obrigatório").trim(),
   sigla: z.string().min(1, "Sigla é obrigatória").toUpperCase(),
@@ -9,7 +9,7 @@ export const CreateSetorSchema = z.object({
 
 export type CreateSetorInput = z.infer<typeof CreateSetorSchema>;
 
-// ==================== USUARIO SCHEMAS ====================
+// Schemas de criação de um novo Usuario
 export const CreateUsuarioSchema = z.object({
   nome: z.string().min(1, "Nome é obrigatório").trim(),
   email: z.string().email("E-mail inválido"),
@@ -26,12 +26,19 @@ export const CreateUsuarioSchema = z.object({
 
 export type CreateUsuarioInput = z.infer<typeof CreateUsuarioSchema>;
 
-// ==================== ID VALIDATION ====================
+// Validção de ID
 export const IdParamSchema = z.object({
   id: z.string()
     .regex(/^\d+$/, "ID deve conter apenas números")
     .transform((val) => parseInt(val, 10))
-    .positive("ID deve ser positivo"),
+    .pipe(z.number().positive("ID deve ser positivo")),
 });
 
 export type IdParam = z.infer<typeof IdParamSchema>;
+
+export const UsuarioLoginSchema = z.object({
+  email: z.string().email("Email inválido"),
+  senha: z.string().min(6, "Senha deve conter no minimo 6 caracteres")
+})
+
+export type LoginUserInput = z.infer<typeof UsuarioLoginSchema>;
