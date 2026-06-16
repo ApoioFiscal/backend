@@ -1,13 +1,18 @@
 import { email, z } from "zod";
 import { FuncaoUsuario } from "@prisma/client";
 
-// Schemas do Setor 
+// Schemas para criar novo setor 
 export const CreateSetorSchema = z.object({
   nome: z.string().min(1, "Nome é obrigatório").trim(),
   sigla: z.string().min(1, "Sigla é obrigatória").toUpperCase(),
 });
 
+// Schema para atualizar novo setor, campos não obrigatórios.
+export const UpdateSetorSchema = CreateSetorSchema.partial()
+
 export type CreateSetorInput = z.infer<typeof CreateSetorSchema>;
+
+export type UpdateSetorInput = z.infer<typeof UpdateSetorSchema>
 
 // Schemas de criação de um novo Usuario
 export const CreateUsuarioSchema = z.object({

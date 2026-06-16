@@ -1,5 +1,5 @@
 import { SetorRepository } from "./setor.repository";
-import { CreateSetorInput } from "../../common/schemas";
+import { CreateSetorInput, UpdateSetorInput } from "../../common/schemas";
 import { DuplicateDataError, NotFoundError } from "../../common/errors";
 
 export class SetorService {
@@ -14,6 +14,16 @@ export class SetorService {
     return this.repository.create(input);
   }
 
+  async update(id: number, input: UpdateSetorInput){
+    const setor = await this.repository.findById(id)
+
+    if(!setor){
+      throw new NotFoundError("Setor não encontrado")
+    }
+
+    await this.repository.update(id, input)
+  }
+
   async findAll() {
     return this.repository.findAll();
   }
@@ -24,5 +34,15 @@ export class SetorService {
       throw new NotFoundError("Setor");
     }
     return setor;
+  }
+
+  async deleteById(id: number) {
+    const setor = await this.repository.findById(id)
+
+    if(!setor){
+      throw new NotFoundError("Setor não encontrado")
+    }
+
+    return await this.repository.deleteById(id)
   }
 }
