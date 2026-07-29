@@ -47,3 +47,20 @@ export const UsuarioLoginSchema = z.object({
 })
 
 export type LoginUserInput = z.infer<typeof UsuarioLoginSchema>;
+
+
+export const CreateLicitacaoSchema = z.object({
+  numeroProcesso: z.string().min(1, "Número do processo é obrigatório"),
+
+  dataAbertura: z.string().transform((str) => new Date(str)),
+  dataFechamento: z.string().transform((str) => new Date(str)),
+  modalidade: z.string().min(1, "Modalidade é obrigatória"),
+  valorTotal: z.number().positive("O valor total deve ser positivo"),
+});
+
+export const UpdateLicitacaoSchema = CreateLicitacaoSchema.partial().extend({
+  status: z.boolean().optional() 
+});
+
+export type CreateLicitacaoInput = z.infer<typeof CreateLicitacaoSchema>;
+export type UpdateLicitacaoInput = z.infer<typeof UpdateLicitacaoSchema>;
