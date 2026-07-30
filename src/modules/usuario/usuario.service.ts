@@ -86,7 +86,9 @@ export class UsuarioService {
     const token = jwt.sign(
       {
         id: usuario.id,
-        email: usuario.email
+        email: usuario.email, 
+        funcao: usuario.funcao, 
+        isAdmin: usuario.isAdmin
       },
       process.env.JWT_SECRET!,
       {
